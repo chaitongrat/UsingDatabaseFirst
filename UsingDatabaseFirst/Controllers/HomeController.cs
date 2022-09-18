@@ -1,21 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using UsingDatabaseFirst.Models;
+using UsingDatabaseFirst.Models.db;
 
 namespace UsingDatabaseFirst.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly thaivbShopContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(thaivbShopContext db)
         {
-            _logger = logger;
+            _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var ps = from p in _db.Products select p;
+            if (ps == null)
+            {
+                return NotFound();
+            }
+            return View(await ps.ToListAsync());
         }
 
         public IActionResult Privacy()
